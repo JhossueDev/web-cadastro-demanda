@@ -1,0 +1,20 @@
+{
+  "name": "web-cadastro-demanda",
+  "version": "1.0.0",
+  "description": "Sistema Web de Cadastro de Produtos com Previsão de Demanda",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon src/app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
