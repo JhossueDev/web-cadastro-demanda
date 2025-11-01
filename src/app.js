@@ -1,13 +1,21 @@
-const express = require("express")
-const app = express()
-const port = 3333
+import express from "express"
 
+const app = express()
+
+//mock
+const ListaProdutos =[
+    {id: 1, produtos: "Air max TN purple", grupo: "Tênis"},
+    {id: 2, produtos: "Air max TN pimento", grupo: "Tênis"},
+    {id: 3, produtos: "Air max TN wolrd", grupo: "Tênis"},
+    {id: 4, produtos: "Air max TN metalic", grupo: "Tênis"}
+]
 //estou criando a rota padrão ou raiz
 app.get("/", (req,res) => {
     res.send("Testando o node js")
 })
 
-//escutar a porta 3333
-app.listen(port, () => {
-    console.log(`Servidor rodando no endereço http://localhost:${port}`) 
+app.get("/Lprodutos", (req, res) =>{
+    res.status(200).send(ListaProdutos)
 })
+
+export default app
