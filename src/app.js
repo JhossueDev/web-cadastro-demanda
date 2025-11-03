@@ -1,6 +1,9 @@
 import express from "express"
 
 const app = express()
+//indicar para o express ler body com JSON
+
+app.use(express.json())
 
 //mock
 const ListaProdutos =[
@@ -16,6 +19,11 @@ app.get("/", (req,res) => {
 
 app.get("/Lprodutos", (req, res) =>{
     res.status(200).send(ListaProdutos)
+})
+
+app.post("/Lprodutos", (req, res) =>{
+    ListaProdutos.push(req.body)
+    res.status(201).send("Produto cadastrado com sucesso!")
 })
 
 export default app
