@@ -1,7 +1,7 @@
 import express from "express"
 
-const app = express()
 //indicar para o express ler body com JSON
+const app = express()
 
 app.use(express.json())
 
