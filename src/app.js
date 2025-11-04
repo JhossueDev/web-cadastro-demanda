@@ -13,38 +13,50 @@ const ListaProdutos =[
     {id: 4, produtos: "Air max TN metalic", grupo: "Tênis"}
 ]
 
-//retornar o objeto por id
+//Função para retornar o objeto por id
 function buscarProdutoPorId(id){
     return ListaProdutos.filter(produto => produto.id == id)
 }
 
-//pegar a posição do elemento no array por id
+//Função para pegar a posição do elemento no array por id
 function buscarIndexProdutos(id){
     return ListaProdutos.findIndex(produto => produto.id == id)
 }
 
-//estou criando a rota padrão ou raiz
+//Rota padrão 
 app.get("/", (req,res) => {
     res.send("Testando o node js")
 })
 
+//Lista dos produtos
 app.get("/Lprodutos", (req, res) =>{
     res.status(200).send(ListaProdutos)
 })
 
-app.get("/produtos/:id", (req, res) =>{
+//Faz a busca pelo id
+app.get("/Lprodutos/:id", (req, res) =>{
     res.json(buscarProdutoPorId(req.params.id))
 })
 
+//Post para criar ou adicionar produto
 app.post("/Lprodutos", (req, res) =>{
     ListaProdutos.push(req.body)
     res.status(201).send("Produto cadastrado com sucesso!")
 })
 
-app.delete("/produtos/:id", (req, res) =>{
+//Para deletar algum produto
+app.delete("/Lprodutos/:id", (req, res) =>{
     let index = buscarIndexProdutos(req.params.id)
     ListaProdutos.splice(index, 1)
     res.send(`"Produto com id: ${req.params.id} removido co sucesso!"`)
+})
+
+//para atualizar produto
+app.put("/Lprodutos/:id", (req, res) => {
+    let index = buscarIndexProdutos(req.params.id)
+    ListaProdutos[index].produtos = req.body.produtos
+    ListaProdutos[index].grupo = req.body.grupo
+    res.json(ListaProdutos)
 })
 
 export default app
