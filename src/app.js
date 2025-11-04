@@ -12,6 +12,11 @@ const ListaProdutos =[
     {id: 3, produtos: "Air max TN wolrd", grupo: "Tênis"},
     {id: 4, produtos: "Air max TN metalic", grupo: "Tênis"}
 ]
+
+function buscarProdutoPorId(id){
+    return ListaProdutos.filter(produto => produto.id == id)
+}
+
 //estou criando a rota padrão ou raiz
 app.get("/", (req,res) => {
     res.send("Testando o node js")
@@ -19,6 +24,11 @@ app.get("/", (req,res) => {
 
 app.get("/Lprodutos", (req, res) =>{
     res.status(200).send(ListaProdutos)
+})
+
+app.get("/produtos/:id", (req, res) =>{
+    //let index = req.params.id
+    res.json(buscarProdutoPorId(req.params.id))
 })
 
 app.post("/Lprodutos", (req, res) =>{
