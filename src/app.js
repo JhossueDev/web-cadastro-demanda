@@ -13,8 +13,14 @@ const ListaProdutos =[
     {id: 4, produtos: "Air max TN metalic", grupo: "Tênis"}
 ]
 
+//retornar o objeto por id
 function buscarProdutoPorId(id){
     return ListaProdutos.filter(produto => produto.id == id)
+}
+
+//pegar a posição do elemento no array por id
+function buscarIndexProdutos(id){
+    return ListaProdutos.findIndex(produto => produto.id == id)
 }
 
 //estou criando a rota padrão ou raiz
@@ -27,13 +33,18 @@ app.get("/Lprodutos", (req, res) =>{
 })
 
 app.get("/produtos/:id", (req, res) =>{
-    //let index = req.params.id
     res.json(buscarProdutoPorId(req.params.id))
 })
 
 app.post("/Lprodutos", (req, res) =>{
     ListaProdutos.push(req.body)
     res.status(201).send("Produto cadastrado com sucesso!")
+})
+
+app.delete("/produtos/:id", (req, res) =>{
+    let index = buscarIndexProdutos(req.params.id)
+    ListaProdutos.splice(index, 1)
+    res.send(`"Produto com id: ${req.params.id} removido co sucesso!"`)
 })
 
 export default app
