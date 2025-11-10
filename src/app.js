@@ -26,17 +26,25 @@ app.get("/", (req,res) => {
 //Lista dos produtos
 app.get("/Lprodutos", async (req, res) =>{
     try {
-        const produtos = await Produto.find()
-        res.status(200).send(produtos)
+        const produtos = await Produto.find();
+        res.status(200).send(produtos);
     } catch (error) {
-        res.status(500).json({massage: "Erro ao buscar produto ", error})
+        res.status(500).json({massage: "Erro ao buscar produto ", error});
     }
 })
 
 //Faz a busca pelo id
-app.get("/Lprodutos/:id", (req, res) =>{
-    res.json(buscarProdutoPorId(req.params.id))
-})
+app.get("/Lprodutos/:id", async (req, res) =>{
+    try {
+        const produto = await Produto.findById(req.params.id)
+        if (!produto) {
+            return res.status(404).json({massage: "Produto não encontrado."});
+        }
+        res.status(200).json(produto);
+    } catch (error) {
+        return res.status(500).json({massage: "Erro ao encontrar produto", error});
+    }
+});
 
 //Post para criar ou adicionar produto
 app.post("/Lprodutos", async (req, res) =>{
