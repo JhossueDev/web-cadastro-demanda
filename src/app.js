@@ -1,17 +1,12 @@
 import express from "express"
+import Produto from "../models/Produto.js"
 
 //indicar para o express ler body com JSON
 const app = express()
 
 app.use(express.json())
 
-//mock
-const ListaProdutos =[
-    {id: 1, produtos: "Air max TN purple", grupo: "Tênis"},
-    {id: 2, produtos: "Air max TN pimento", grupo: "Tênis"},
-    {id: 3, produtos: "Air max TN wolrd", grupo: "Tênis"},
-    {id: 4, produtos: "Air max TN metalic", grupo: "Tênis"}
-]
+
 
 //Função para retornar o objeto por id
 function buscarProdutoPorId(id){
@@ -29,8 +24,13 @@ app.get("/", (req,res) => {
 })
 
 //Lista dos produtos
-app.get("/Lprodutos", (req, res) =>{
-    res.status(200).send(ListaProdutos)
+app.get("/Lprodutos", async (req, res) =>{
+    try {
+        const produtos = await Produto.find()
+        res.status(200).send(produtos)
+    } catch (error) {
+        res.status(500).json({massage: "Erro ao buscar produto ", error})
+    }
 })
 
 //Faz a busca pelo id
@@ -39,9 +39,13 @@ app.get("/Lprodutos/:id", (req, res) =>{
 })
 
 //Post para criar ou adicionar produto
-app.post("/Lprodutos", (req, res) =>{
-    ListaProdutos.push(req.body)
-    res.status(201).send("Produto cadastrado com sucesso!")
+app.post("/Lprodutos", async (req, res) =>{
+    try {
+        const novoProduto = await Produto.create(req.body)
+        res.status(201).send(novoProduto)
+    } catch (error) {
+        res.status(400).send({massage:"Erro ao cadastrar produto", error})
+    }
 })
 
 //Para deletar algum produto
