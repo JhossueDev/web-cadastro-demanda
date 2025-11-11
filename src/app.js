@@ -7,17 +7,6 @@ const app = express()
 app.use(express.json())
 
 
-
-//Função para retornar o objeto por id
-function buscarProdutoPorId(id){
-    return ListaProdutos.filter(produto => produto.id == id)
-}
-
-//Função para pegar a posição do elemento no array por id
-function buscarIndexProdutos(id){
-    return ListaProdutos.findIndex(produto => produto.id == id)
-}
-
 //Rota padrão 
 app.get("/", (req,res) => {
     res.send("Testando o node js")
@@ -57,18 +46,38 @@ app.post("/Lprodutos", async (req, res) =>{
 })
 
 //Para deletar algum produto
-app.delete("/Lprodutos/:id", (req, res) =>{
-    let index = buscarIndexProdutos(req.params.id)
-    ListaProdutos.splice(index, 1)
-    res.send(`"Produto com id: ${req.params.id} removido co sucesso!"`)
-})
+app.delete("/Lprodutos/:id", async (req, res) =>{
+    try {
+        const produtoDeletado = await Produto.findByIdAndDelete(req.params.id);
+
+        if (!produtoDeletado) {
+            return res.status(404).json({message: "Produto não encontrado!❌"});
+        }
+
+        return res.status(200).json({message: "Produto removido com sucesso!✅",
+            produto: produtoDeletado
+        });
+
+    } catch (error) {
+        return res.status(500).json({message: "Erro ao remover produto.❌", error});
+    }
+
+});
 
 //para atualizar produto
-app.put("/Lprodutos/:id", (req, res) => {
-    let index = buscarIndexProdutos(req.params.id)
-    ListaProdutos[index].produtos = req.body.produtos
-    ListaProdutos[index].grupo = req.body.grupo
-    res.json(ListaProdutos)
-})
+app.put("/Lprodutos/:id", async (req, res) => {
+    try {
+        const produtoAtualizado = await Produto.findByIdAndUpdate(req.params.id,req.body,{new:true});
+
+        if (!produtoAtualizado) {
+            return res.status(404).json({message: "Produto não encontrado!"});
+        }
+
+        res.status(200).json(produtoAtualizado);
+
+    } catch (error) {
+        return res.status(500).json({message: "Erro ao atualizar produto."});
+    }
+});
 
 export default app
