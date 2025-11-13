@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
 
 const ProdutoSchema = new mongoose.Schema({
-    produto:{type: String, required: true},
-    grupo: {type:String, required: true},
-    preco: {type: Number, required: true}
+    nome:{type: String, required: true},
+    preco: {type:Number, required: true},
+    quantidade: {type: Number, required: true}
 }, {
     timestamps : true
 });
