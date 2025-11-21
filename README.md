@@ -1,4 +1,4 @@
-# Web Cadastro de Produtos (MVC + Node.js + MongoDB)
+# Backend de Produtos, Vendas e Previsões (Node.js/MongoDB + PythonShell)
 
 Esse backend é o cérebro da aplicação — é ele que organiza os dados, fala com o banco, cuida das rotas e garante que tudo chegue no front do jeito certo.
 A API foi construída em Node.js + Express, usando o MongoDB/Mongoose pra armazenar as informações de forma estruturada.
