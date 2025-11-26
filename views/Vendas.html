@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagina de Vendas</title>
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+<header>
+    <H1>Pagina de Vendas</H1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="cadastro.html">Cadastro de Produtos</a>
+        <a href="projeção.html">Projeção de Vendas</a>
+    </nav>
+
+    <form id="formProdutos">
+        <input type="text" placeholder="Nome do Produto">
+        <input type="month" placeholder="Data da Venda">
+        <input type="number" placeholder="Quantidade">
+        <button type="submit">Procurar produto</button>
+    </form>
+</header>
+   
+<main>
+    <h2>
+    Produto vendido com sucesso!
+    </h2>
+<section>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Produto</th>
+                <th>Data da Venda</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody id="listaProdutos">
+<!-- Produtos vendidos aparecerão aqui. -->
+        </tbody>
+    </table>
+</section>
+</main>
+
+<footer>
+    <p>
+        2025 Projeto semestral da faculdade 
+    </p>
+</footer>
+    <script src="controllers/vendaControle.js"></script>
+    <script src="routes/vendaRotas.js"></script>
+    <script src="models/vendaModel.js"></script>
+</body>
+</html>

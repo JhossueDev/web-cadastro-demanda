@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro</title>
+    <link rel="stylesheet" href="/public/style.css">
+</head>
+<body>
+<header>
+    <H1>
+    Cadastro de Produtos
+    </H1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="Vendas.html">Vendas</a>
+        <a href="projeção.html">Projeção de Vendas</a>
+    </nav>
+    <form id="formProdutos">
+        <input type="text" placeholder="Nome do Produto">
+        <input type="number" placeholder="Preço do Produto" step="0.01">
+        <input type="number" placeholder="Quantidade">
+        <button type="submit">Cadastrar Produto</button>
+    </form>
+</header>
+    <main>
+        <h2>
+        Produto cadastrado com sucesso!
+        </h2>
+<section>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nome do Produto</th>
+                <th>Preço</th>
+                <th>Quantidade</th>
+            </tr>
+        </thead>
+        <tbody id="listaProdutos">
+            <!-- Produtos cadastrados aparecerão aqui -->
+        </tbody>
+    </table>
+    </main>
+</section>
+
+<footer>
+    <p>
+        2025 Projeto semestral da faculdade 
+    </p>
+</footer>
+<script src="/public/cadastro.js"></script>
+</body>
+</html>
