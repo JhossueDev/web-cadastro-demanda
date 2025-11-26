@@ -58,19 +58,21 @@ form{
     margin: 30px;
     
 }
-input, button {
+input, button, select {
   padding: 10px;
   border-radius: 8px;
   border: 1px solid #ccc;
   font-size: 14px;
     margin: 5px;
 }
+
 table{
     width: 100%;
     border-collapse: separate;
     margin-top: 20px;
-    }
-tr,th, td{
+}
+
+tr, th, td{
     border:3px solid #ddd;
     border-radius: 12px;
     padding: 8px;
