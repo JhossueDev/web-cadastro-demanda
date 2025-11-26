@@ -6,9 +6,10 @@ import previsaoRotas from "../routes/previsaoRotas.js";
 
 const app = express();
 
-app.use(cors());
-app.use(previsaoRotas);
 app.use(express.json());
+app.use(cors());
+app.use(express.static("public"));
+app.use(previsaoRotas);
 app.use(produtoRotas);
 app.use(vendaRotas);
 
