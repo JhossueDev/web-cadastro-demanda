@@ -3,9 +3,9 @@ import { listarProdutos, buscarProdutoPorId, criarProduto, atualizarProduto, del
 
 const router = Router();
 
-router.get("/Lprodutos", listarProdutos);
-router.get("/Lprodutos/:id", buscarProdutoPorId);
 router.post("/Lprodutos", criarProduto);
+router.get("/produtos", listarProdutos);
+router.get("/Lprodutos/:id", buscarProdutoPorId);
 router.put("/Lprodutos/:id", atualizarProduto);
 router.delete("/Lprodutos/:id", deletarProduto);
 

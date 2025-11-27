@@ -6,7 +6,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
     const produto = {
         nome: inputs[0].value,
         preco: Number(inputs[1].value),
-        quantidade: Number(inputs[2].value) 
+        quantidade: Number(inputs[2].value)
     };
 
     try {
@@ -40,7 +40,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
 
 function adicionarNaTabela(produto){
     const tabela = document.getElementById("listaProdutos");
-    
+
     const linha = `
         <tr>
             <td>${produto.nome}</td>
