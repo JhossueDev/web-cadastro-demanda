@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro</title>
-    <link rel="stylesheet" href="/public/style.css">
+    <link rel="stylesheet" href="/web-cadastro-demanda/public/style.css">
 </head>
 <body>
 <header>
@@ -17,7 +17,12 @@
         <a href="projeção.html">Projeção de Vendas</a>
     </nav>
     <form id="formProdutos">
-        <input type="text" placeholder="Nome do Produto">
+        <select>    
+            <option value="" disabled selected>Selecione o Produto</option>
+            <option value="Televisão">Televisão</option>
+            <option value="Geladeira">Geladeira</option>
+            <option value="Micro-ondas">Micro-ondas</option>
+        </select>
         <input type="number" placeholder="Preço do Produto" step="0.01">
         <input type="number" placeholder="Quantidade">
         <button type="submit">Cadastrar Produto</button>
@@ -49,6 +54,8 @@
         2025 Projeto semestral da faculdade 
     </p>
 </footer>
-<script src="/public/cadastro.js"></script>
+
+<script src="/web-cadastro-demanda/public/cadastro.js"></script>
+
 </body>
 </html>
