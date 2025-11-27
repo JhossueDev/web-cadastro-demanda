@@ -1,5 +1,15 @@
 import Produto from "../models/Produto.js";
 
+//Post para criar ou adicionar produto
+export const criarProduto = async (req, res) => {
+    try {
+        const novoProduto = await Produto.create(req.body);
+        res.status(201).json(novoProduto);
+    } catch (error) {
+        res.status(400).json({ message: "Erro ao cadastrar produto❌", error });
+    }
+};
+
 // Lista dos produtos
 export const listarProdutos = async (req, res) => {
     try {
@@ -9,6 +19,7 @@ export const listarProdutos = async (req, res) => {
         res.status(500).json({ message: "Erro ao buscar produtos❌", error });
     }
 };
+
 
 //Faz a busca por ID 
 export const buscarProdutoPorId = async (req, res) => {
@@ -23,15 +34,6 @@ export const buscarProdutoPorId = async (req, res) => {
     }
 };
 
-//Post para criar ou adicionar produto
-export const criarProduto = async (req, res) => {
-    try {
-        const novoProduto = await Produto.create(req.body);
-        res.status(201).json(novoProduto);
-    } catch (error) {
-        res.status(400).json({ message: "Erro ao cadastrar produto❌", error });
-    }
-};
 
 //para atualizar produto
 export const atualizarProduto = async (req, res) => {
