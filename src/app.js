@@ -11,28 +11,32 @@ const app = express();
 const _filename = fileURLToPath(import.meta.url);
 const _dirname = path.dirname(_filename);
 
-//rota principal
-app.get("/", (req, res) =>{
+app.use(express.json());
+app.use(cors());
+
+// arquivos estáticos
+app.use(express.static("public"));
+
+//rotas das páginas
+app.get("/", (req, res) => {
     res.sendFile(path.join(_dirname, "../views/index.html"));
 });
 
-app.get("/cadastro", (req, res) =>{
+app.get("/cadastro", (req, res) => {
     res.sendFile(path.join(_dirname, "../views/cadastro.html"));
 });
 
-app.get("/vendas", (req, res) =>{
+app.get("/vendas", (req, res) => {
     res.sendFile(path.join(_dirname, "../views/vendas.html"));
 });
 
-app.get("/projecao", (req, res) =>{
-    res.sendFile(path.join(_dirname, "../views/projecao.html"))
+app.get("/projecao", (req, res) => {
+    res.sendFile(path.join(_dirname, "../views/projecao.html"));
 });
 
-app.use(express.json());
-app.use(cors());
-app.use(express.static("public"));
-app.use(previsaoRotas);
-app.use(produtoRotas);
-app.use(vendaRotas);
+//rotas da API
+app.use("/api", previsaoRotas);
+app.use("/api", produtoRotas);
+app.use("/api", vendaRotas);
 
 export default app;

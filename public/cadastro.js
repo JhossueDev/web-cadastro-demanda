@@ -1,117 +1,90 @@
-//autocomplete do nome
-const inputNome = document.getElementById("nomeProduto");
+// Seletores
+const inputNome = document.querySelector("#formProdutos input[type='text']");
+const inputMes = document.querySelector("#formProdutos input[type='month']");
+const inputQtd = document.querySelector("#formProdutos input[type='number']");
+const form = document.getElementById("formProdutos");
+const lista = document.getElementById("listaProdutos");
 
-// cria a lista de sugestões
-const listaSugestoes = document.createElement("ul");
-listaSugestoes.id = "listaSugestoes";
-listaSugestoes.style.listStyle = "none";
-listaSugestoes.style.padding = "0";
-listaSugestoes.style.marginTop = "5px";
-listaSugestoes.style.border = "1px solid #ccc";
-listaSugestoes.style.borderRadius = "4px";
-listaSugestoes.style.maxHeight = "140px";
-listaSugestoes.style.overflowY = "auto";
-listaSugestoes.style.display = "none";
-
-inputNome.parentNode.appendChild(listaSugestoes);
-
-// busca enquanto digita
+//autocomplete das sugestão de produtos
 inputNome.addEventListener("input", async () => {
-    const query = inputNome.value.trim().toLowerCase();
+    const nome = inputNome.value.trim();
 
-    if (query.length === 0) {
-        listaSugestoes.style.display = "none";
-        listaSugestoes.innerHTML = "";
+    if (nome.length < 1) return;
+
+    const res = await fetch(`/api/produtos?nome=${nome}`);
+    const produtos = await res.json();
+
+    //cria dropdown simples
+    let box = document.getElementById("sugestoes");
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "sugestoes";
+        box.classList.add("autocomplete-box");
+        inputNome.parentNode.appendChild(box);
+    }
+
+    box.innerHTML = "";
+
+    produtos.forEach(p => {
+        const item = document.createElement("div");
+        item.innerText = p.nome;
+        item.onclick = () => {
+            inputNome.value = p.nome;
+            inputNome.dataset.id = p._id; // salva o id escondido
+            box.innerHTML = "";
+        };
+        box.appendChild(item);
+    });
+});
+
+//registra a  venda
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const produtoId = inputNome.dataset.id;
+    const quantidade = inputQtd.value;
+    const data = inputMes.value;
+
+    if (!produtoId) {
+        alert("Selecione um produto válido da lista!");
         return;
     }
 
-    try {
-        const response = await fetch("http://localhost:3333/produtos");
-        const produtos = await response.json();
+    const res = await fetch("/api/vendas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ produtoId, quantidade, data })
+    });
 
-        const filtrados = produtos.filter(p =>
-            p.nome.toLowerCase().includes(query)
-        );
+    const venda = await res.json();
 
-        if (filtrados.length === 0) {
-            listaSugestoes.style.display = "none";
-            listaSugestoes.innerHTML = "";
-            return;
-        }
-
-        listaSugestoes.innerHTML = filtrados
-            .map(p => `<li style="padding: 6px; cursor:pointer">${p.nome}</li>`)
-            .join("");
-
-        listaSugestoes.style.display = "block";
-
-        Array.from(listaSugestoes.children).forEach(li => {
-            li.addEventListener("click", () => {
-                inputNome.value = li.textContent;
-                listaSugestoes.style.display = "none";
-            });
-        });
-
-    } catch (err) {
-        console.error("Erro ao buscar produtos", err);
+    if (venda.error) {
+        alert(venda.error);
+        return;
     }
+
+    alert("Venda registrada com sucesso!");
+    carregarVendas();
 });
 
-// esconde ao perder foco
-inputNome.addEventListener("blur", () => {
-    setTimeout(() => listaSugestoes.style.display = "none", 150);
-});
+//listar vendas
+async function carregarVendas() {
+    const res = await fetch("/api/vendas");
+    const vendas = await res.json();
 
-//cadastro normal
-document.getElementById("formProdutos").addEventListener("submit", async (event) => {
-    event.preventDefault();
+    lista.innerHTML = "";
 
-    const inputs = document.querySelectorAll("#formProdutos input");
+    vendas.forEach(v => {
+        const tr = document.createElement("tr");
 
-    const produto = {
-        nome: inputs[0].value,
-        preco: Number(inputs[1].value),
-        quantidade: Number(inputs[2].value)
-    };
+        tr.innerHTML = `
+            <td>${v.produtoId.nome}</td>
+            <td>${v.data.substring(0, 10)}</td>
+            <td>${v.quantidade}</td>
+        `;
 
-    try {
-        const response = await fetch("http://localhost:3333/Lprodutos", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(produto)
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            alert("Erro ao cadastrar o produto!❌");
-            console.log(data);
-            return;
-        }
-
-        alert("Produto cadastrado com sucesso.✅");
-
-        adicionarNaTabela(data);
-
-        event.target.reset();
-
-    } catch (error) {
-        console.error("Erro:", error);
-        alert("Não foi possível conectar à API.❌");
-    }
-});
-
-function adicionarNaTabela(produto) {
-    const tabela = document.getElementById("listaProdutos");
-
-    const linha = `
-        <tr>
-            <td>${produto.nome}</td>
-            <td>R$ ${produto.preco.toFixed(2)}</td>
-            <td>${produto.quantidade}</td>
-        </tr>
-    `;
-    tabela.innerHTML += linha;
+        lista.appendChild(tr);
+    });
 }
+
+carregarVendas();
