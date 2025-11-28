@@ -26,7 +26,7 @@ inputNome.addEventListener("input", async () => {
     }
 
     try {
-        const response = await fetch("http://localhost:3333/produtos");
+        const response = await fetch("http://localhost:3333/api/produtos");
         const produtos = await response.json();
 
         const filtrados = produtos.filter(p =>
@@ -75,7 +75,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
     };
 
     try {
-        const response = await fetch("http://localhost:3333/Lprodutos", {
+        const response = await fetch("http://localhost:3333/api/Lprodutos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -83,7 +83,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
             body: JSON.stringify(produto)
         });
 
-    const venda = await res.json();
+        const data = await response.json();
 
         if (!response.ok) {
             alert("Erro ao cadastrar o produto!❌");
