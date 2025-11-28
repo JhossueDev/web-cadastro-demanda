@@ -14,7 +14,7 @@ const _dirname = path.dirname(_filename);
 app.use(express.json());
 app.use(cors());
 
-// arquivos estáticos
+//arquivos estáticos
 app.use(express.static("public"));
 
 //rotas das páginas
@@ -34,7 +34,7 @@ app.get("/projecao", (req, res) => {
     res.sendFile(path.join(_dirname, "../views/projecao.html"));
 });
 
-//rotas da API
+// rotas da API
 app.use("/api", previsaoRotas);
 app.use("/api", produtoRotas);
 app.use("/api", vendaRotas);

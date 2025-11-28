@@ -1,130 +1,89 @@
-//auto complte do produto
-const inputNome = document.querySelector("#formProdutos ");
-let produtoSeleionandoId = null;
+const inputNome = document.querySelector("#formProdutos input[type='text']");
+const inputMes = document.querySelector("#formProdutos input[type='month']");
+const inputQtd = document.querySelector("#formProdutos input[type='number']");
+const form = document.getElementById("formProdutos");
+const lista = document.getElementById("listaProdutos");
 
-//lista visual de sugestões
-const listaSugestoes = document.createElement("ul");
-listaSugestoes.id = "listaSugestoes";
-listaSugestoes.style.listStyle = "none";
-listaSugestoes.style.padding = "0";
-listaSugestoes.style.marginTop = "5px";
-listaSugestoes.style.border = "1px solid #ccc";
-listaSugestoes.style.maxHeight = "150px";
-listaSugestoes.style.overflow = "auto";
-listaSugestoes.style.display = "none";
-inputNome.parentNode.appendChild(listaSugestoes);
+//Autocomplete sugestão de produtos
+inputNome.addEventListener("input", async () => {
+    const nome = inputNome.value.trim();
 
-//enquanot digita buca o produto
-inputNome.addEventListener("input", async () =>{
-    const query = inputNome.ariaValueMax.trim();
+    if (nome.length < 1) return;
 
-    if (query.length === 0) {
-        listaSugestoes.style.display = "none";
-        listaSugestoes.innerHTML = "";
-        produtoSeleionandoId = null;
+    const res = await fetch(`/api/produtos?nome=${nome}`);
+    const produtos = await res.json();
+
+    //criar dropdown simples
+    let box = document.getElementById("sugestoes");
+    if (!box) {
+        box = document.createElement("div");
+        box.id = "sugestoes";
+        box.classList.add("autocomplete-box");
+        inputNome.parentNode.appendChild(box);
+    }
+
+    box.innerHTML = "";
+
+    produtos.forEach(p => {
+        const item = document.createElement("div");
+        item.innerText = p.nome;
+        item.onclick = () => {
+            inputNome.value = p.nome;
+            inputNome.dataset.id = p._id; // salva o id escondido
+            box.innerHTML = "";
+        };
+        box.appendChild(item);
+    });
+});
+
+//Registra as venda
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const produtoId = inputNome.dataset.id;
+    const quantidade = inputQtd.value;
+    const data = inputMes.value;
+
+    if (!produtoId) {
+        alert("Selecione um produto válido da lista!");
         return;
     }
 
-    try {
-        const res = await fetch (`http://localhost:3333/produtos?search=${query}`);
-        const produtos = await res.json();
+    const res = await fetch("/api/vendas", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ produtoId, quantidade, data })
+    });
 
-        if (Array.isArray(produtos) || produtos.length === 0) {
-         listaSugestoes.style.display = "none";
-         return;   
-        }
+    const venda = await res.json();
 
-        listaSugestoes.innerHTML = produtos
-        .map(p => `<li data-id="${p._id}" style="padding:6px; cursor:pointer">${p.nome}</li>`)
-        .join("");
-
-        listaSugestoes.style.display = "block";
-
-        //clique em uma sugestão
-        listaSugestoes.querySelectorAll("li").forEach(li =>{
-            li.addEventListener("click", () =>{
-                inputNome.value = li.textContent;
-                produtoSeleionandoId - li.dataset.id;//slavo oi produto
-                listaSugestoes.style.display = "none";
-            });
-        });
-    } catch (err) {
-        console.error("Erro no autocomplete", err);
-    }
-});
-
-//quando o item perde o foco ele esconde a lista
-inputNome.addEventListener("blur", () =>{
-    setTimeout(() => listaSugestoes.style.display = "none", 150);
-});
-
-//cadastra a venda
-document.getElementById("formProdutos").addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-
-    const nomeProduto = inputNome.value.trim();
-    const dataVenda = document.querySelecto("#formProdutos input:nth-child(2)").value;
-    const quantidade = Number(document.querySelector("#formProdutos input:nth-child()").value);
-
-    if (!produtoSeleionandoId) {
-        alert("Selecione um produto válido nas sugestões!");
+    if (venda.error) {
+        alert(venda.error);
         return;
     }
 
-    const venda = {
-        produtoId: produtoSeleionandoId,
-        quantidade,
-        data: dataVenda ? new Date(dataVenda) : new Date() 
-    };
-
-    try {
-        const res = await fetch("http:localhost:3333/vendas", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(venda)
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-            alert("Erro ao resgistrar venda!❌");
-            console.log(data);
-            return;
-        }
-
-        alert("Venda resgistrada com sucesso!✅");
-        adicionarVendaNaTabela(data);
-
-        event.target.reset();
-        produtoSeleionandoId = null;
-    } catch (err) {
-        console.error("Erro ao resgistrar vendas:", err);
-    }
+    alert("Venda registrada com sucesso!");
+    carregarVendas();
 });
 
-//listar de vendas
+//listar vendas
 async function carregarVendas() {
-    try {
-        const res = await fetch("http:localhost:3333/vendas");
-        const vendas = await res.json();
+    const res = await fetch("/api/vendas");
+    const vendas = await res.json();
 
-        vendas.forEach(v => adicionarVendaNaTabela(v))
-    } catch (err) {
-        console.error("Erro ao carregar vendas", err);
-    }
+    lista.innerHTML = "";
+
+    vendas.forEach(v => {
+        const tr = document.createElement("tr");
+
+        tr.innerHTML = `
+            <td>${v.produtoId.nome}</td>
+            <td>${v.data.substring(0, 10)}</td>
+            <td>${v.quantidade}</td>
+        `;
+
+        lista.appendChild(tr);
+    });
 }
 
-function adicionarVendaNaTabela(venda) {
-    const tabela = document.getElementById("listarProdutos");
-
-    const linha = `
-        <tr>
-            <td>${venda.produtoId?.nome || "Produto removido"}</td>
-            <td>${new Date(venda.data).toLocaleDateString("pt-BR")}</td>
-            <td>${venda.quantidade}</td>
-        </tr>
-    `;
-    tabela.innerHTML += linha;
-}
 carregarVendas();
