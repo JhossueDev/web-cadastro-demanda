@@ -95,3 +95,32 @@ button{
     transition-duration: 0.4s;
 }
 /* CSS da pagina de projeção */
+#formProdutos {
+    position: relative;
+}
+
+#formProdutos input[type="text"]{
+    position: relative;
+}
+
+.autocomplete-box {
+    position: absolute;
+    background: #ffffff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 100%;
+    max-height: 200px;
+    overflow: auto;
+    z-index: 9999;
+}
+
+.autocomplete-box div {
+    padding: 10px;
+    cursor: pointer;
+    color: #000;
+}
+
+.autocomplete-box div:hover {
+    background: #27a800;
+    color: rgb(0, 184, 61);
+}

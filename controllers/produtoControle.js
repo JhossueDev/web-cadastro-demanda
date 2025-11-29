@@ -1,5 +1,24 @@
 import Produto from "../models/Produto.js";
 
+export const buscarProdutoPorNome = async (req, res) =>{
+    try {
+        const nome = req.query.nome;
+
+        if (!nome) {
+            return res.status(400).json({message: "Nome do produto é obrigatório!❌"});
+        }
+
+        const produto = await Produto.findOne({nome: { $regex: nome, $options: "i"}});
+
+        if (!produto) {
+            return res.status(404).json({message: "Produto não encontrado.❌"});
+        }
+        res.json(produto);
+    } catch (error) {
+        res.status(500).json({message: "Erro no servidor ao buscar por nome.❌"})
+    }
+}
+
 //Post para criar ou adicionar produto
 export const criarProduto = async (req, res) => {
     try {
@@ -13,10 +32,20 @@ export const criarProduto = async (req, res) => {
 // Lista dos produtos
 export const listarProdutos = async (req, res) => {
     try {
-        const produtos = await Produto.find();
-        res.status(200).json(produtos);
+        const nome = req.query.nome;
+
+        if (nome) {
+            const produtos = await Produto.find({
+                nome: {$regex: nome, $options: "i"}
+            });
+
+            return res.json(produtos);
+        }
+
+        const todos = await Produto.find();
+        res.json(todos);
     } catch (error) {
-        res.status(500).json({ message: "Erro ao buscar produtos❌", error });
+        res.status(500).json({error: "Erro ao listar os produtos!❌"});
     }
 };
 

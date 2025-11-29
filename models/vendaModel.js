@@ -11,7 +11,7 @@ const vendaSchema = new mongoose.Schema({
         required: true
     },
     data: {
-        type: Number,
+        type: String,
         required: true
     }
 });

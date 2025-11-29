@@ -1,12 +1,42 @@
 import { Router } from "express";
-import { listarProdutos, buscarProdutoPorId, criarProduto, atualizarProduto, deletarProduto } from "../controllers/produtoControle.js";
+import Produto from "../models/Produto.js";
+import {
+    listarProdutos,
+    buscarProdutoPorId,
+    criarProduto,
+    atualizarProduto,
+    deletarProduto
+} from "../controllers/produtoControle.js";
 
 const router = Router();
 
-router.post("/Lprodutos", criarProduto);
+//lista os produtos
 router.get("/produtos", listarProdutos);
-router.get("/Lprodutos/:id", buscarProdutoPorId);
-router.put("/Lprodutos/:id", atualizarProduto);
-router.delete("/Lprodutos/:id", deletarProduto);
+//faz a busca por ID
+router.get("/produtos/:id", buscarProdutoPorId);
+//cria produto
+router.post("/produtos", criarProduto);
+//atualiza o produto
+router.put("/produtos/:id", atualizarProduto);
+//deleta o produto
+router.delete("/produtos/:id", deletarProduto);
+//verifica o estoque
+router.get("/verificarEstoque/:id", async (req, res) => {
+    try {
+        const produto = await Produto.findById(req.params.id);
+
+        if (!produto) {
+            return res.status(404).json({ error: "Produto não encontrado❌" });
+        }
+
+        res.json({
+            nome: produto.nome,
+            preco: produto.preco,
+            estoque: produto.quantidade
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Erro ao consultar estoque.❌" });
+    }
+});
 
 export default router;
