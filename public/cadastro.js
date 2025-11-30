@@ -15,11 +15,13 @@ listaSugestoes.style.display = "none";
 
 inputNome.parentNode.appendChild(listaSugestoes);
 
+let produtoEditandoId = null;
+
 //faz busca enquanto digita
 inputNome.addEventListener("input", async () => {
     const query = inputNome.value.trim().toLowerCase();
 
-    if (query.length === 0) {
+    if (!query) {
         listaSugestoes.style.display = "none";
         listaSugestoes.innerHTML = "";
         return;
@@ -45,7 +47,7 @@ inputNome.addEventListener("input", async () => {
 
         listaSugestoes.style.display = "block";
 
-        Array.from(listaSugestoes.children).forEach(li => {
+        [...listaSugestoes.children].forEach(li => {
             li.addEventListener("click", () => {
                 inputNome.value = li.textContent;
                 listaSugestoes.style.display = "none";
@@ -74,9 +76,17 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
         quantidade: Number(inputs[2].value)
     };
 
+    let url = "http://localhost:3333/api/produtos";
+    let method = "POST";
+
+    if (produtoEditandoId) {
+        url = `http://localhost:3333/api/produtos/${produtoEditandoId}`;
+        method = "PUT";
+    }
+
     try {
-        const response = await fetch("http://localhost:3333/api/produtos", {
-            method: "POST",
+        const response = await fetch( url, {
+            method,
             headers: {
                 "Content-Type": "application/json"
             },
@@ -91,13 +101,17 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
             } else {
                 alert("Erro ao cadastrar o produto!❌");
             }
-            console.log(data);
             return;
         }
 
-        alert("Produto cadastrado com sucesso.✅");
-
-        adicionarNaTabela(data);
+        if (method === "POST") {
+            adicionarNaTabela(data)
+            alert("Produto cadastrado com sucesso.✅");
+        } else {
+            atualizarLinhaTabela(data);
+            alert("Produto atualizado com sucesso.✅")
+            produtoEditandoId = null;
+        }
 
         event.target.reset();
 
@@ -110,24 +124,64 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
 function adicionarNaTabela(produto) {
     const tabela = document.getElementById("listaProdutos");
 
-    const linha = `
-        <tr>
-            <td>${produto.nome}</td>
+    const tr = document.createElement("tr");
+    tr.dataset.id = produto._id;
+
+    tr.innerHTML = `
+        <td>${produto.nome}</td>
             <td>R$ ${produto.preco.toFixed(2)}</td>
             <td>${produto.quantidade}</td>
-        </tr>
+        <td>
+            <button class = "btn-editar">✏️ Editar</button>
+        </td>
     `;
-    tabela.innerHTML += linha;
+
+    tr.querySelector(".btn-editar").addEventListener("click", () =>{
+        selecionarProduto(produto);
+    });
+
+    tabela.appendChild(tr);
 }
+
+function atualizarLinhaTabela(produto){
+    const tr = document.querySelector(`tr[data-id="${produto._id}"]`);
+
+    if (!tr) return;
+
+    tr.innerHTML  = `
+        <td>${produto.nome}</td>
+        <td>R$ ${produto.preco.toFixed(2)}</td>
+        <td>${produto.quantidade}</td>
+        <td>
+            <button class="btn-editar">✏️ Editar</button>
+        </td>
+    `;
+
+    tr.querySelector(".btn-editar").addEventListener("click", () =>{
+        selecionarProduto(produto);
+    });
+}
+
+function selecionarProduto(produto){
+    produtoEditandoId = produto._id;
+
+    const inputs = document.querySelectorAll("#formProdutos input");
+
+    inputs[0].value = produto.nome;
+    inputs[1].value = produto.preco;
+    inputs[2].value = produto.quantidade;
+}
+
 //lista inicial ao abrir a tabela
 async function carregarlistaInicial() {
     try {
         const response = await fetch("/api/produtos");
         const produtos = await response.json();
 
+        document.getElementById("listaProdutos").innerHTML = "";
+
         produtos.forEach(produto => {
-            adicionarNaTabela(produto);
-        });
+            adicionarNaTabela(produto);});
     } catch (error) {
          console.error("Erro ao carregar lista Inicial.❌")
     }
