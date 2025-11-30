@@ -86,7 +86,11 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
         const data = await response.json();
 
         if (!response.ok) {
-            alert("Erro ao cadastrar o produto!❌");
+            if (response.status === 409) {
+                alert("Esse produto já existe na lista.❌")
+            } else {
+                alert("Erro ao cadastrar o produto!❌");
+            }
             console.log(data);
             return;
         }
@@ -115,6 +119,7 @@ function adicionarNaTabela(produto) {
     `;
     tabela.innerHTML += linha;
 }
+//lista inicial ao abrir a tabela
 async function carregarlistaInicial() {
     try {
         const response = await fetch("/api/produtos");

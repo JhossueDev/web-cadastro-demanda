@@ -22,6 +22,17 @@ export const buscarProdutoPorNome = async (req, res) =>{
 //Post para criar ou adicionar produto
 export const criarProduto = async (req, res) => {
     try {
+        const {nome} = req.body;
+
+        //verifica se já existe produto com esse nome
+        const produtoExiste = await Produto.findOne({
+            nome: { $regex: `^${nome}$`, $options: "i"}//faz a comparçaõ ignorando maiusculo/minusculo
+        });
+
+        if (produtoExiste) {
+            return res.status(409).json({ message: "Esse produto já está cadastrado❌"});
+        }
+
         const novoProduto = await Produto.create(req.body);
         res.status(201).json(novoProduto);
     } catch (error) {
