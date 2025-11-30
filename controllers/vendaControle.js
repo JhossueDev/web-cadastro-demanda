@@ -12,12 +12,18 @@ export const registarVenda = async (req, res) =>{
         //confere se o produto existe
         const produto = await Produto.findById(produtoId);
         if (!produto) {
-            return res.status(404).json({erro: "Produto não encontrado."})
+            return res.status(404).json({erro: "Produto não encontrado.❌"})
         };
+
+        //diminiu o estoque
+        produto.quantidade -= quantidade;
+        await produto.save();
 
         //cria uma venda
         const venda = await Venda.create({
             produtoId,
+            nomeProduto: produto.nome,
+            precoUnitario: produto.preco,
             quantidade,
             data: data || new Date()
         });
@@ -29,8 +35,8 @@ export const registarVenda = async (req, res) =>{
 
 export const listarVendas = async (req, res) =>{
     try {
-        const vendas = await Venda.find().populate("produtoId", "nome preco");
-        res.json(vendas)
+        const vendas = await Venda.find();
+        res.json(vendas);
     } catch (error) {
         res.status(500).json({error: error.message });
     }

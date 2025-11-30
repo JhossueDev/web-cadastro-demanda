@@ -54,7 +54,7 @@ inputNome.addEventListener("input", async () => {
             empty.style.color = "#666";
             box.appendChild(empty);
             produtoSelecionado = null;
-            console.log("nenhum produto encontrado");
+            console.log("Nenhum produto encontrado");
             return;
         }
 
@@ -158,7 +158,23 @@ form.addEventListener("submit", async (event) => {
             return;
         }
 
-        alert("Venda registrada com sucesso!");
+        alert("Venda registrada com sucesso!✅");
+
+        const nota = `
+========= NOTA FISCAL =========
+
+Cliente: Consumidor Final
+Produto: ${obj.nomeProduto}
+Preço Unit.: R$ ${obj.precoUnitario.toFixed(2)}
+Quantidade: ${obj.quantidade}
+Total: R$ ${(obj.precoUnitario * obj.quantidade).toFixed(2)}
+
+Data: ${obj.data}
+
+===============================
+`;
+console.log(data);
+alert(nota);
         produtoSelecionado = null;
         inputNome.value = "";
         inputQtd.value = "";
@@ -181,7 +197,7 @@ async function carregarVendas() {
         lista.innerHTML = "";
         vendas.forEach(v => {
             const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${v.produtoId?.nome || "Produto removido"}</td>
+            tr.innerHTML = `<td>${v.nomeProduto}</td>
                             <td>${(v.data || "").substring(0,10)}</td>
                             <td>${v.quantidade}</td>`;
             lista.appendChild(tr);
