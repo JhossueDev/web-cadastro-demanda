@@ -1,7 +1,7 @@
 //autocomplete do nome
 const inputNome = document.getElementById("nomeProduto");
 
-// cria a lista de sugestões
+//cria a lista de sugestões
 const listaSugestoes = document.createElement("ul");
 listaSugestoes.id = "listaSugestoes";
 listaSugestoes.style.listStyle = "none";
@@ -15,7 +15,7 @@ listaSugestoes.style.display = "none";
 
 inputNome.parentNode.appendChild(listaSugestoes);
 
-// busca enquanto digita
+//faz busca enquanto digita
 inputNome.addEventListener("input", async () => {
     const query = inputNome.value.trim().toLowerCase();
 
@@ -75,7 +75,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
     };
 
     try {
-        const response = await fetch("http://localhost:3333/api/Lprodutos", {
+        const response = await fetch("http://localhost:3333/api/produtos", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -115,3 +115,17 @@ function adicionarNaTabela(produto) {
     `;
     tabela.innerHTML += linha;
 }
+async function carregarlistaInicial() {
+    try {
+        const response = await fetch("/api/produtos");
+        const produtos = await response.json();
+
+        produtos.forEach(produto => {
+            adicionarNaTabela(produto);
+        });
+    } catch (error) {
+         console.error("Erro ao carregar lista Inicial.❌")
+    }
+}
+
+carregarlistaInicial();
