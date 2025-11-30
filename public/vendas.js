@@ -1,17 +1,77 @@
 const inputNome = document.getElementById("inputNome");
 const inputMes = document.getElementById("dataVenda");
 const inputQtd = document.getElementById("quantidade");
+const inputCliente = document.getElementById("cliente");
 const form = document.getElementById("formProdutos");
 const lista = document.getElementById("listaProdutos");
 
 let produtoSelecionado = null;
+let carrinho = [];
+let total = 0;
 
-console.log("vendas.js carregado");
+//adiciona item no carrinho
+document.getElementById("addItem").addEventListener("click", () => {
+    if (!produtoSelecionado) {
+        alert("Selecione um produto válido.❌");
+        return;
+    }
 
-//autocomplete
+    const quantidade = Number(inputQtd.value);
+
+    if (quantidade <= 0) {
+        alert("Quantidade inválida.");
+        return;
+    }
+
+    if (quantidade > produtoSelecionado.estoque) {
+        alert(`Estoque insuficiente! Disponível: ${produtoSelecionado.estoque}`);
+        return;
+    }
+
+    const subtotal = produtoSelecionado.preco * quantidade;
+
+    carrinho.push({
+        id: produtoSelecionado.id,
+        nome: produtoSelecionado.nome,
+        quantidade,
+        preco: produtoSelecionado.preco,
+        subtotal
+    });
+
+    atualizarCarrinho();
+
+    produtoSelecionado = null;
+    inputNome.value = "";
+    inputQtd.value = "";
+});
+
+//atualiza a tabela do carrinho
+function atualizarCarrinho() {
+    const tabela = document.getElementById("listaCarrinho");
+    tabela.innerHTML = "";
+
+    total = 0;
+
+    carrinho.forEach(item => {
+        total += item.subtotal;
+
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+            <td>${item.nome}</td>
+            <td>${item.quantidade}</td>
+            <td>R$ ${item.preco.toFixed(2)}</td>
+            <td>R$ ${item.subtotal.toFixed(2)}</td>
+        `;
+        tabela.appendChild(tr);
+    });
+
+    document.getElementById("totalCompra").textContent = total.toFixed(2);
+}
+
+//autocomplete dos produtos
 inputNome.addEventListener("input", async () => {
     const nome = inputNome.value.trim();
-    console.log("digitou:", nome);
+
     if (nome.length < 1) {
         const oldBox = document.getElementById("sugestoes");
         if (oldBox) oldBox.innerHTML = "";
@@ -20,16 +80,9 @@ inputNome.addEventListener("input", async () => {
 
     try {
         const res = await fetch(`/api/produtos?nome=${encodeURIComponent(nome)}`);
-        console.log("/api/produtos?nome=", nome, "status", res.status);
-
-        if (!res.ok) {
-            console.error("Erro ao buscar produtos:", res.status, await res.text());
-            alert("Erro ao buscar produtos no servidor. Veja console.");
-            return;
-        }
+        if (!res.ok) return;
 
         const produtos = await res.json();
-        console.log("produtos retornados:", produtos);
 
         let box = document.getElementById("sugestoes");
         if (!box) {
@@ -40,21 +93,19 @@ inputNome.addEventListener("input", async () => {
             box.style.position = "absolute";
         }
 
-        //posiciona a box
         const rect = inputNome.getBoundingClientRect();
         box.style.width = rect.width + "px";
         box.style.left = rect.left + "px";
         box.style.top = (rect.bottom + window.scrollY) + "px";
         box.innerHTML = "";
 
-        if (!Array.isArray(produtos) || produtos.length === 0) {
+        if (!produtos.length) {
             const empty = document.createElement("div");
             empty.textContent = "Nenhum produto encontrado";
             empty.style.padding = "8px";
             empty.style.color = "#666";
             box.appendChild(empty);
             produtoSelecionado = null;
-            console.log("Nenhum produto encontrado");
             return;
         }
 
@@ -66,27 +117,15 @@ inputNome.addEventListener("input", async () => {
             item.style.background = "#fff";
             item.style.cursor = "pointer";
 
-            item.onclick = async (ev) => {
-                ev.stopPropagation();
-                console.log("clicou item:", p);
-
+            item.onclick = async () => {
                 inputNome.value = p.nome;
                 box.innerHTML = "";
 
-                //faz a busca no estoque
                 try {
                     const infoRes = await fetch(`/api/verificarEstoque/${p._id}`);
-                    console.log("fetch verificarEstoque status:", infoRes.status);
-                    if (!infoRes.ok) {
-                        const txt = await infoRes.text();
-                        console.error("Erro verificarEstoque:", infoRes.status, txt);
-                        alert("Erro ao obter estoque do produto. Veja console.");
-                        produtoSelecionado = null;
-                        return;
-                    }
+                    if (!infoRes.ok) return;
 
                     const dados = await infoRes.json();
-                    console.log("dados estoque:", dados);
 
                     produtoSelecionado = {
                         id: p._id,
@@ -95,14 +134,15 @@ inputNome.addEventListener("input", async () => {
                         estoque: dados.estoque
                     };
 
-                    //mostrar info na tela em vez de depender só de alert
                     alert(
-                        `Produto encontrado:\nNome: ${dados.nome}\nPreço: ${Number(dados.preco).toFixed(2)}\nEstoque: ${dados.estoque}`
+                        `Produto encontrado:\n
+Nome: ${dados.nome}
+Preço: R$ ${Number(dados.preco).toFixed(2)}
+Estoque: ${dados.estoque}`
                     );
-                } catch (err) {
-                    console.error("Erro fetch verificarEstoque:", err);
-                    alert("Erro ao conectar para verificar estoque. Veja console.");
-                    produtoSelecionado = null;
+                } catch (e) {
+                    console.error(e);
+                    alert("Erro ao obter estoque");
                 }
             };
 
@@ -111,14 +151,13 @@ inputNome.addEventListener("input", async () => {
 
     } catch (err) {
         console.error("Erro no autocomplete:", err);
-        alert("Erro no autocomplete. Veja console.");
     }
 });
 
-//submit(venda)
+//registra o item no back
+
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    console.log("submit click, produtoSelecionado:", produtoSelecionado);
 
     if (!produtoSelecionado) {
         alert("Selecione um produto válido!❌");
@@ -127,14 +166,20 @@ form.addEventListener("submit", async (event) => {
 
     const quantidade = Number(inputQtd.value);
     const data = inputMes.value;
+    const cliente = inputCliente.value.trim();
 
-    if (isNaN(quantidade) || quantidade <= 0) {
+    if (!cliente) {
+        alert("Informe o nome do cliente!");
+        return;
+    }
+
+    if (quantidade <= 0) {
         alert("Quantidade inválida");
         return;
     }
 
     if (quantidade > produtoSelecionado.estoque) {
-        alert(`Estoque insuficiente! Disponível: ${produtoSelecionado.estoque}`);
+        alert(`Estoque insuficiente!`);
         return;
     }
 
@@ -145,65 +190,109 @@ form.addEventListener("submit", async (event) => {
             body: JSON.stringify({
                 produtoId: produtoSelecionado.id,
                 quantidade,
-                data
+                data,
+                cliente
             })
         });
 
-        console.log("POST /api/vendas status:", res.status);
-        const obj = await res.json();
-        console.log("resposta venda:", obj);
-
         if (!res.ok) {
-            alert("Erro ao registrar venda: " + (obj.error || obj.message || res.status));
+            const err = await res.json();
+            alert("Erro ao registrar venda: " + err.message);
             return;
         }
 
-        alert("Venda registrada com sucesso!✅");
+        alert("Item registrado no caixa!✅");
 
-        const nota = `
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao registrar a venda.");
+    }
+});
+
+//finaliza a venda e a nota fiscal
+
+document.getElementById("finalizarVenda").addEventListener("click", async () => {
+    const cliente = inputCliente.value.trim();
+    const dinheiro = Number(document.getElementById("dinheiroRecebido").value);
+
+    if (!cliente) {
+        alert("Informe o nome do cliente!");
+        return;
+    }
+
+    if (!carrinho.length) {
+        alert("Carrinho vazio.");
+        return;
+    }
+
+    if (dinheiro < total) {
+        alert("Dinheiro insuficiente!");
+        return;
+    }
+
+    const troco = dinheiro - total;
+
+    await fetch("/api/vendas/multipla", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            cliente,
+            itens: carrinho,
+            total,
+            dinheiro,
+            troco,
+            data: new Date()
+        })
+    });
+
+    const nota = `
 ========= NOTA FISCAL =========
 
-Cliente: Consumidor Final
-Produto: ${obj.nomeProduto}
-Preço Unit.: R$ ${obj.precoUnitario.toFixed(2)}
-Quantidade: ${obj.quantidade}
-Total: R$ ${(obj.precoUnitario * obj.quantidade).toFixed(2)}
+Cliente: ${cliente}
 
-Data: ${obj.data}
+${carrinho.map(i =>
+`• ${i.nome} — ${i.quantidade} un — R$ ${i.subtotal.toFixed(2)}`).join("\n")}
 
-===============================
-`;
-console.log(data);
-alert(nota);
-        produtoSelecionado = null;
-        inputNome.value = "";
-        inputQtd.value = "";
-        carregarVendas();
-    } catch (err) {
-        console.error("Erro ao postar venda:", err);
-        alert("Erro ao conectar ao servidor ao registrar venda. Veja console.");
-    }
+--------------------------------
+TOTAL: R$ ${total.toFixed(2)}
+Recebido: R$ ${dinheiro.toFixed(2)}
+Troco: R$ ${troco.toFixed(2)}
+--------------------------------
+
+Data: ${new Date().toLocaleString()}
+
+===============================`;
+
+    alert(nota);
+
+    carrinho = [];
+    atualizarCarrinho();
+    inputCliente.value = "";
+    await carregarVendas();  
 });
 
 //lista as vendas
 async function carregarVendas() {
     try {
         const res = await fetch("/api/vendas");
-        if (!res.ok) {
-            console.error("/api/vendas erro:", res.status, await res.text());
-            return;
-        }
+        if (!res.ok) return;
+
         const vendas = await res.json();
         lista.innerHTML = "";
+
         vendas.forEach(v => {
             const tr = document.createElement("tr");
-            tr.innerHTML = `<td>${v.nomeProduto}</td>
-                            <td>${(v.data || "").substring(0,10)}</td>
-                            <td>${v.quantidade}</td>`;
+            tr.innerHTML = `
+                <td>${v.nomeProduto || "Produto removido"}</td>
+                <td>${v.cliente}</td>
+                <td>${(v.data || "").substring(0, 10)}</td>
+                <td>${v.quantidade}</td>
+            `;
             lista.appendChild(tr);
         });
+
     } catch (err) {
-        console.error("Erro carregar vendas:", err);
+        console.error(err);
     }
 }
 

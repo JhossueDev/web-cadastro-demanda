@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { type } from "os";
 
 const vendaSchema = new mongoose.Schema({
     produtoId: {
@@ -21,7 +22,12 @@ const vendaSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    
+
+    cliente: {
+        type: String,
+        required: true
+    },
+
     data: {
         type: String,
         required: true

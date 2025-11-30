@@ -124,3 +124,12 @@ button{
     background: #27a800;
     color: rgb(0, 184, 61);
 }
+
+#tituloCarrinho{
+    width: 100%;
+    text-align: center;
+    margin: 16px 0 10px;
+    font-size: 22px;
+    font-weight: bold;
+    margin: 16px 0 8px 0;
+}

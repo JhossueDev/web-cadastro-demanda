@@ -16,10 +16,31 @@
     </nav>
 
     <form id="formProdutos">
+        <h3>Venda (Caixa)</h3>
+        <input id="cliente" type="text" placeholder="Nome do cliente" required>
         <input id="inputNome" type="text" placeholder="Nome do Produto" required>
         <input id="dataVenda" type="month" placeholder="Data da Venda" required>
         <input id="quantidade" type="number" placeholder="Quantidade" required>
-        <button type="submit">Procurar produto</button>
+        <button id="addItem">Adicionar ao carrinho</button>
+        <button type="submit">Registrar Produto</button>
+        <h2 id="tituloCarrinho">Carrinho</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Produtos</th>
+                    <th>Qtd</th>
+                    <th>Precos</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="listaCarrinho"></tbody>
+        </table>
+        <h3>Pagamentos</h3>
+        <p>Total: R$ <span id="totalCompra">0.00</span></p>
+
+        <input id="dinheiroRecebido" type="number" placeholder="Dinheiro recebido">
+        <button id="finalizarVenda">Finalizar Venda</button>
     </form>
 </header>
    
@@ -29,6 +50,7 @@
         <thead>
             <tr>
                 <th>Nome do Produto</th>
+                <th>Nome cliente</th>
                 <th>Data da Venda</th>
                 <th>Quantidade</th>
             </tr>

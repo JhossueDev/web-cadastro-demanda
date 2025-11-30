@@ -3,7 +3,11 @@ import Venda from '../models/vendaModel.js';
 
 export const registarVenda = async (req, res) =>{
     try {
-        const {produtoId, quantidade, data} = req.body;
+        const {produtoId, quantidade, data, cliente} = req.body;
+
+        if (!cliente) {
+            return res.status(400).json({error: "Nome do cliente é obrigatório"});
+        }
 
         if (!produtoId || !quantidade) {
             return res.status(400).json({error: "produtoId e quantidade são obrigatórios."});
@@ -25,6 +29,7 @@ export const registarVenda = async (req, res) =>{
             nomeProduto: produto.nome,
             precoUnitario: produto.preco,
             quantidade,
+            cliente,
             data: data || new Date()
         });
         res.status(201).json(venda);
