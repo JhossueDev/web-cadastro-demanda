@@ -129,36 +129,85 @@ function adicionarNaTabela(produto) {
 
     tr.innerHTML = `
         <td>${produto.nome}</td>
-            <td>R$ ${produto.preco.toFixed(2)}</td>
-            <td>${produto.quantidade}</td>
+        <td>R$ ${produto.preco.toFixed(2)}</td>
+        <td>${produto.quantidade}</td>
         <td>
-            <button class = "btn-editar">✏️ Editar</button>
+            <button class="btn-editar">✏️ Editar</button>
+            <button class="btn-excluir">🗑️ Excluir</button>
         </td>
     `;
 
-    tr.querySelector(".btn-editar").addEventListener("click", () =>{
+    // Editar
+    tr.querySelector(".btn-editar").addEventListener("click", () => {
         selecionarProduto(produto);
+    });
+
+    // Excluir
+    tr.querySelector(".btn-excluir").addEventListener("click", async () => {
+        if (!confirm("Deseja realmente excluir este produto?")) return;
+
+        try {
+            const response = await fetch(
+                `http://localhost:3333/api/produtos/${produto._id}`,
+                { method: "DELETE" }
+            );
+
+            if (!response.ok) {
+                alert("Erro ao excluir produto.❌");
+                return;
+            }
+
+            tr.remove();
+            alert("Produto excluído com sucesso!✅");
+        } catch (error) {
+            console.error("Erro ao excluir:", error);
+            alert("Não foi possível conectar à API.❌");
+        }
     });
 
     tabela.appendChild(tr);
 }
 
-function atualizarLinhaTabela(produto){
+function atualizarLinhaTabela(produto) {
     const tr = document.querySelector(`tr[data-id="${produto._id}"]`);
-
     if (!tr) return;
 
-    tr.innerHTML  = `
+    tr.innerHTML = `
         <td>${produto.nome}</td>
         <td>R$ ${produto.preco.toFixed(2)}</td>
         <td>${produto.quantidade}</td>
         <td>
             <button class="btn-editar">✏️ Editar</button>
+            <button class="btn-excluir">🗑️ Excluir</button>
         </td>
     `;
 
-    tr.querySelector(".btn-editar").addEventListener("click", () =>{
+    // Editar
+    tr.querySelector(".btn-editar").addEventListener("click", () => {
         selecionarProduto(produto);
+    });
+
+    // Excluir
+    tr.querySelector(".btn-excluir").addEventListener("click", async () => {
+        if (!confirm("Deseja realmente excluir este produto?")) return;
+
+        try {
+            const response = await fetch(
+                `http://localhost:3333/api/produtos/${produto._id}`,
+                { method: "DELETE" }
+            );
+
+            if (!response.ok) {
+                alert("Erro ao excluir produto.❌");
+                return;
+            }
+
+            tr.remove();
+            alert("Produto excluído com sucesso!✅");
+        } catch (error) {
+            console.error("Erro ao excluir:", error);
+            alert("Não foi possível conectar à API.❌");
+        }
     });
 }
 
@@ -188,3 +237,4 @@ async function carregarlistaInicial() {
 }
 
 carregarlistaInicial();
+
