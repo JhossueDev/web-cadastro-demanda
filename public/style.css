@@ -138,22 +138,38 @@ button{
 .toast-custom {
     background: #fff !important;
     padding: 14px 16px !important;
+    overflow: hidden;
     min-width: 280px;
     font-size: 14px;
 }
 
 .toast-barra {
+    height: 4px;
     position: absolute;
     bottom: 0;
-    left: 0;
-    height: 4px;
+    right: 0;
+
     width: 100%;
-    border-radius: 0 0 8px 8px;
+    transform: translateX(0%);
 }
 
+.toastify {
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+    left: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+}
+
+
 @keyframes tempo {
-    from { width: 100%; }
-    to   { width: 0%; }
+    from {
+        transform: translateX(0%);
+    }
+    to {
+        transform: translateX(-100%);
+    }
 }
 
 /* Confirm customizado */

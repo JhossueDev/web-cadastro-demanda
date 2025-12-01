@@ -19,10 +19,10 @@
     <form id="formProdutos">
         <h3>Venda (Caixa)</h3>
         <input id="cliente" type="text" placeholder="Nome do cliente" required>
-        <input id="inputNome" type="text" placeholder="Nome do Produto" required>
+        <input id="inputNome" type="text" placeholder="Nome do Produto">
         <input id="dataVenda" type="month" placeholder="Data da Venda" required>
-        <input id="quantidade" type="number" placeholder="Quantidade" required>
-        <button id="addItem">Adicionar ao carrinho</button>
+        <input id="quantidade" type="number" placeholder="Quantidade">
+        <button id="addItem" type="button">Adicionar ao carrinho</button>
         <button type="submit">Registrar Produto</button>
         <h2 id="tituloCarrinho">Carrinho</h2>
 
@@ -41,7 +41,7 @@
         <p>Total: R$ <span id="totalCompra">0.00</span></p>
 
         <input id="dinheiroRecebido" type="number" placeholder="Dinheiro recebido">
-        <button id="finalizarVenda">Finalizar Venda</button>
+        <button id="finalizarVenda" type="button">Finalizar Venda</button>
     </form>
 </header>
    
@@ -92,7 +92,7 @@ function mostrarToast(msg, tipo = "success") {
             color: "#333",
             boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
             borderRadius: "8px",
-            borderLeft: `6px solid ${cores[tipo]}`
+            borderLeft: `none`
         },
         onClick: function(){}
     }).showToast();
@@ -102,15 +102,48 @@ function mostrarToast(msg, tipo = "success") {
 </script>
 
 <script>
+function mostrarNotaToast(texto) {
+    Toastify({
+        text: texto,
+        duration: 4000,
+        gravity: "top",
+        position: "right",
+        close: true,
+        stopOnFocus: true,
+        className: "toast-custom confirm-toast",
+        style: {
+            background: "#fff",
+            color: "#333",
+            whiteSpace: "pre-line",
+            maxWidth: "420px",
+            fontFamily: "monospace"
+        }
+    }).showToast();
+
+    criarBarraTempo(4000, "#28a745");
+}
+</script>
+
+<script>
 function criarBarraTempo(tempo, cor) {
-    const toast = document.querySelector(".toastify:last-child");
+
+    // pega o último toast realmente criado
+    const toasts = document.querySelectorAll(".toast-custom");
+    const toast = toasts[toasts.length - 1];
 
     if (!toast) return;
 
     const barra = document.createElement("div");
-    barra.classList.add("toast-barra");
+    barra.className = "toast-barra";
+    
+    barra.style.backgroundColor = cor;
 
-    barra.style.background = cor;
+    barra.style.position = "absolute";
+    barra.style.bottom = "0";
+    barra.style.right = "0";
+    barra.style.height = "4px";
+    barra.style.width = "100%";
+
     barra.style.animation = `tempo ${tempo}ms linear forwards`;
 
     toast.style.position = "relative";

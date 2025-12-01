@@ -266,7 +266,7 @@ Data: ${new Date().toLocaleString()}
 
 ===============================`;
 
-    alert(nota);
+    mostrarNotaToast(nota);
 
     carrinho = [];
     atualizarCarrinho();
