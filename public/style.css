@@ -133,3 +133,25 @@ button{
     font-weight: bold;
     margin: 16px 0 8px 0;
 }
+
+/* Toast estilo profissional */
+.toast-custom {
+    background: #fff !important;
+    padding: 14px 16px !important;
+    min-width: 280px;
+    font-size: 14px;
+}
+
+.toast-barra {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 4px;
+    width: 100%;
+    border-radius: 0 0 8px 8px;
+}
+
+@keyframes tempo {
+    from { width: 100%; }
+    to   { width: 0%; }
+}

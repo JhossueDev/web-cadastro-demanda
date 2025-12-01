@@ -97,19 +97,19 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
 
         if (!response.ok) {
             if (response.status === 409) {
-                alert("Esse produto já existe na lista.❌")
+                mostrarToast("Esse produto já existe na lista.❌")
             } else {
-                alert("Erro ao cadastrar o produto!❌");
+                mostrarToast("Erro ao cadastrar o produto!❌");
             }
             return;
         }
 
         if (method === "POST") {
             adicionarNaTabela(data)
-            alert("Produto cadastrado com sucesso.✅");
+            mostrarToast("Produto cadastrado com sucesso.✅");
         } else {
             atualizarLinhaTabela(data);
-            alert("Produto atualizado com sucesso.✅")
+            mostrarToast("Produto atualizado com sucesso.✅")
             produtoEditandoId = null;
         }
 
@@ -117,7 +117,7 @@ document.getElementById("formProdutos").addEventListener("submit", async (event)
 
     } catch (error) {
         console.error("Erro:", error);
-        alert("Não foi possível conectar à API.❌");
+        mostrarToast("Não foi possível conectar à API.❌");
     }
 });
 
@@ -158,10 +158,10 @@ function adicionarNaTabela(produto) {
             }
 
             tr.remove();
-            alert("Produto excluído com sucesso!✅");
+            mostrarToast("Produto excluído com sucesso!✅");
         } catch (error) {
             console.error("Erro ao excluir:", error);
-            alert("Não foi possível conectar à API.❌");
+            mostrarToast("Não foi possível conectar à API.❌");
         }
     });
 
@@ -198,15 +198,15 @@ function atualizarLinhaTabela(produto) {
             );
 
             if (!response.ok) {
-                alert("Erro ao excluir produto.❌");
+                mostrarToast("Erro ao excluir produto.❌");
                 return;
             }
 
             tr.remove();
-            alert("Produto excluído com sucesso!✅");
+            mostrarToast("Produto excluído com sucesso!✅");
         } catch (error) {
             console.error("Erro ao excluir:", error);
-            alert("Não foi possível conectar à API.❌");
+            mostrarToast("Não foi possível conectar à API.❌");
         }
     });
 }
