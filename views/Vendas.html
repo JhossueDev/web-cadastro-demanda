@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pagina de Vendas</title>
     <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+    <title>Pagina de Vendas</title>
 </head>
 <body>
 <header>
@@ -56,7 +57,6 @@
             </tr>
         </thead>
         <tbody id="listaProdutos">
-<!-- Produtos vendidos aparecerão aqui. -->
         </tbody>
     </table>
 </section>
@@ -67,6 +67,57 @@
         2025 Projeto semestral da faculdade 
     </p>
 </footer>
-    <script src="/vendas.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+function mostrarToast(msg, tipo = "success") {
+    
+    const cores = {
+        success: "#28a745",
+        error: "#dc3545",
+        warning: "#ffc107"
+    };
+    
+    const tempo = 3000;
+    
+    Toastify({
+        text: msg,
+        duration: tempo,
+        gravity: "top",
+        position: "right",
+        close: true,
+        backgroundColor: "#ffffff",
+        stopOnFocus: true,
+        className: "toast-custom",
+        style: {
+            color: "#333",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+            borderRadius: "8px",
+            borderLeft: `6px solid ${cores[tipo]}`
+        },
+        onClick: function(){}
+    }).showToast();
+    
+    criarBarraTempo(3000, cores[tipo]);
+}
+</script>
+
+<script>
+function criarBarraTempo(tempo, cor) {
+    const toast = document.querySelector(".toastify:last-child");
+
+    if (!toast) return;
+
+    const barra = document.createElement("div");
+    barra.classList.add("toast-barra");
+
+    barra.style.background = cor;
+    barra.style.animation = `tempo ${tempo}ms linear forwards`;
+
+    toast.style.position = "relative";
+    toast.appendChild(barra);
+}
+</script>
+
+<script src="/vendas.js"></script>
 </body>
 </html>

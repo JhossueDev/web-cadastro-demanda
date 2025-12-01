@@ -12,19 +12,19 @@ let total = 0;
 //adiciona item no carrinho
 document.getElementById("addItem").addEventListener("click", () => {
     if (!produtoSelecionado) {
-        alert("Selecione um produto válido.❌");
+        mostrarToast("Selecione um produto válido.❌");
         return;
     }
 
     const quantidade = Number(inputQtd.value);
 
     if (quantidade <= 0) {
-        alert("Quantidade inválida.");
+        mostrarToast("Quantidade inválida.");
         return;
     }
 
     if (quantidade > produtoSelecionado.estoque) {
-        alert(`Estoque insuficiente! Disponível: ${produtoSelecionado.estoque}`);
+        mostrarToast(`Estoque insuficiente! Disponível: ${produtoSelecionado.estoque}`);
         return;
     }
 
@@ -111,6 +111,7 @@ inputNome.addEventListener("input", async () => {
 
         produtos.forEach(p => {
             const item = document.createElement("div");
+
             item.textContent = p.nome;
             item.style.padding = "8px";
             item.style.borderBottom = "1px solid #eee";
@@ -123,7 +124,9 @@ inputNome.addEventListener("input", async () => {
 
                 try {
                     const infoRes = await fetch(`/api/verificarEstoque/${p._id}`);
-                    if (!infoRes.ok) return;
+                    if (!infoRes.ok) {
+                        throw new Error("Falha ao obter estoque");
+                    }
 
                     const dados = await infoRes.json();
 
@@ -134,15 +137,15 @@ inputNome.addEventListener("input", async () => {
                         estoque: dados.estoque
                     };
 
-                    alert(
+                    mostrarToast(
                         `Produto encontrado:\n
-Nome: ${dados.nome}
-Preço: R$ ${Number(dados.preco).toFixed(2)}
-Estoque: ${dados.estoque}`
+                        Nome: ${dados.nome}
+                        Preço: R$ ${Number(dados.preco).toFixed(2)}
+                        Estoque: ${dados.estoque}`
                     );
                 } catch (e) {
                     console.error(e);
-                    alert("Erro ao obter estoque");
+                    mostrarToast("Erro ao obter estoque");
                 }
             };
 
@@ -160,7 +163,7 @@ form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
     if (!produtoSelecionado) {
-        alert("Selecione um produto válido!❌");
+        mostrarToast("Selecione um produto válido!❌");
         return;
     }
 
@@ -169,17 +172,17 @@ form.addEventListener("submit", async (event) => {
     const cliente = inputCliente.value.trim();
 
     if (!cliente) {
-        alert("Informe o nome do cliente!");
+        mostrarToast("Informe o nome do cliente!");
         return;
     }
 
     if (quantidade <= 0) {
-        alert("Quantidade inválida");
+        mostrarToast("Quantidade inválida");
         return;
     }
 
     if (quantidade > produtoSelecionado.estoque) {
-        alert(`Estoque insuficiente!`);
+        mostrarToast(`Estoque insuficiente!`);
         return;
     }
 
@@ -201,11 +204,11 @@ form.addEventListener("submit", async (event) => {
             return;
         }
 
-        alert("Item registrado no caixa!✅");
+        mostrarToast("Item registrado no caixa!✅");
 
     } catch (err) {
         console.error(err);
-        alert("Erro ao registrar a venda.");
+        mostrarToast("Erro ao registrar a venda.");
     }
 });
 
@@ -216,17 +219,17 @@ document.getElementById("finalizarVenda").addEventListener("click", async () => 
     const dinheiro = Number(document.getElementById("dinheiroRecebido").value);
 
     if (!cliente) {
-        alert("Informe o nome do cliente!");
+        mostrarToast("Informe o nome do cliente!");
         return;
     }
 
     if (!carrinho.length) {
-        alert("Carrinho vazio.");
+        mostrarToast("Carrinho vazio.");
         return;
     }
 
     if (dinheiro < total) {
-        alert("Dinheiro insuficiente!");
+        mostrarToast("Dinheiro insuficiente!");
         return;
     }
 
