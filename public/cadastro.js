@@ -144,8 +144,8 @@ function adicionarNaTabela(produto) {
 
     // Excluir
     tr.querySelector(".btn-excluir").addEventListener("click", async () => {
-        if (!confirm("Deseja realmente excluir este produto?")) return;
-
+        const confirmado = await confirmarExclusao("Deseja realmente excluir este produto?");
+        if (!confirmado) return;
         try {
             const response = await fetch(
                 `http://localhost:3333/api/produtos/${produto._id}`,
@@ -189,7 +189,8 @@ function atualizarLinhaTabela(produto) {
 
     // Excluir
     tr.querySelector(".btn-excluir").addEventListener("click", async () => {
-        if (!confirm("Deseja realmente excluir este produto?")) return;
+        const confirmado = await confirmarExclusao("Deseja realmente excluir este produto?");
+        if (!confirmado) return;
 
         try {
             const response = await fetch(

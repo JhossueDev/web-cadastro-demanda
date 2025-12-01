@@ -48,9 +48,7 @@
     </p>
 </footer>
 <script src="/cadastro.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
 <script>
 function mostrarToast(msg, tipo = "success") {
 
@@ -95,8 +93,47 @@ function criarBarraTempo(tempo, cor) {
 
     toast.appendChild(barra);
 }
+
+function confirmarExclusao(mensagem) {
+    return new Promise((resolve) => {
+        const toast = Toastify({
+            gravity: "top",
+            position: "center",
+            close: false,
+            duration: -1, // não fecha sozinho
+            className: "confirm-toast",
+            escapeMarkup: false,
+            text: `
+                <div>
+                    <p style="margin:0 0 6px;">${mensagem}</p>
+
+                    <div class="confirm-buttons">
+                        <button id="btnCancelar" class="confirm-btn confirm-cancel">
+                            Cancelar
+                        </button>
+
+                        <button id="btnOk" class="confirm-btn confirm-ok">
+                            OK
+                        </button>
+                    </div>
+                </div>
+            `,
+            onClick: () => {}
+        });
+
+        toast.showToast();
+
+        document.getElementById("btnOk").onclick = () => {
+            toast.hideToast();
+            resolve(true);
+        };
+
+        document.getElementById("btnCancelar").onclick = () => {
+            toast.hideToast();
+            resolve(false);
+        };
+    });
+}
 </script>
-
-
 </body>
 </html>

@@ -155,3 +155,38 @@ button{
     from { width: 100%; }
     to   { width: 0%; }
 }
+
+/* Confirm customizado */
+.confirm-toast {
+    background: #fff !important;
+    color: #333 !important;
+    min-width: 320px;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+}
+
+/* Botões */
+.confirm-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
+    justify-content: flex-end;
+}
+
+.confirm-btn {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.confirm-ok {
+    background: #28a745;
+    color: #fff;
+}
+
+.confirm-cancel {
+    background: #dc3545;
+    color: #fff;
+}
