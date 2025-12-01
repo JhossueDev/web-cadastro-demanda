@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/style.css">
     <title>Projeção de vendas</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
@@ -14,21 +15,90 @@
             <a href="/cadastro">Cadastro de Produtos</a>
             <a href="/vendas">Vendas</a>
         </nav>
-
     </header>
+
     <main>
-        <h2>Projeção de Vendas Futuras</h2>
-        <p>Aqui você pode ver a projeção de vendas com base nos dados atuais.</p>
-        <!-- Conteúdo adicional sobre projeção de vendas pode ser adicionado aqui -->
+        <h2>Previsão Geral de Vendas</h2>
+        <p>Gráfico com estimativa de evendas futuras baseado no histórico</p>
+        <canvas id="graficoPrevisao" width="600" height="400"></canvas>
+        <h3 id="valorPrevisao"></h3>
     </main>
+
     <footer>
         <p>
             2025 Projeto semestral da faculdade 
         </p>
     </footer>
-    <script src="/web-cadastro-demanda/controllers/previsaoControle.js"></script>
-    <script src="/web-cadastro-demanda/routes/previsaoRotas.js"></script>
-    <script src="/web-cadastro-demanda/python/previsao_geral.py"></script>
-    <script src="/web-cadastro-demanda/python/previsao_produto.py"></script>
+
+<script>
+async function carregarPrevisao() {
+    try {
+        //pega a previsão
+        const resPrevisao = await fetch("/api/previsao/geral");
+        if (!resPrevisao.ok) throw new Error("Erro ao buscar previsão.");
+        const { previsao } = await resPrevisao.json();
+
+        //pega histórico de vendas
+        const resVendas = await fetch("/api/vendas");
+        if (!resVendas.ok) throw new Error("Erro ao buscar histórico de vendas.");
+        const vendasJson = await resVendas.json();
+        const vendasArray = Array.isArray(vendasJson) ? vendasJson : vendasJson.vendas || [];
+
+        if (vendasArray.length === 0) {
+            document.getElementById("valorPrevisao").innerHTML = "Sem histórico de vendas para exibir gráfico.";
+            return;
+        }
+
+        //agrupa por data
+        const vendasPorData = {};
+        vendasArray.forEach(v => {
+            const data = new Date(v.data).toLocaleDateString();
+            if (!vendasPorData[data]) vendasPorData[data] = 0;
+            vendasPorData[data] += v.quantidade;
+        });
+
+        //prepara arrays para o gráfico
+        const labels = Object.keys(vendasPorData);
+        const dados = Object.values(vendasPorData);
+
+        //adiciona previsão no final
+        labels.push("Próximo Dia");
+        dados.push(previsao);
+
+        //Cria o gráfico
+        const ctx = document.getElementById("graficoPrevisao");
+        new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: "Vendas",
+                    data: dados,
+                    borderColor: "blue",
+                    backgroundColor: "rgba(0,0,255,0.1)",
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: labels.map((d, i) => i === labels.length - 1 ? "red" : "blue"),
+                    pointRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+
+        //mostra valor da previsão
+        document.getElementById("valorPrevisao").innerHTML = `Previsão para próxima data: ${previsao.toFixed(2)} vendas`;
+
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao carregar gráfico de previsão.❌");
+    }
+}
+carregarPrevisao();
+</script>
 </body>
 </html>
